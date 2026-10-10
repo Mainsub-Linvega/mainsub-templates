@@ -1,0 +1,85 @@
+title: mainsub
+author: Mainsub
+version: 0.1.0
+quarto-required: ">=1.6.0"
+contributes:
+  formats:
+    common:
+      filters:
+        - mainsub.lua
+        - at: post-render
+          path: mainsub-post.lua
+      number-sections: true
+      date-format: long   # "October 10, 2026" / "2026年10月10日", the same in every output
+    # ------------------------------------------------------------------ PDF via XeLaTeX
+    pdf:
+      pdf-engine: xelatex
+      documentclass: article
+      fontsize: 11pt
+      indent: true
+      colorlinks: true
+      fig-width: 6.2
+      fig-height: 3.6
+      fig-pos: htbp
+      fig-format: pdf
+      knitr:
+        opts_chunk:
+          dev: cairo_pdf
+      execute:
+        echo: false
+      highlight-style: mainsub.theme
+      template-partials:
+        - partials/doc-class.tex
+        - partials/title.tex
+        - partials/before-body.tex
+        - partials/babel-lang.tex
+      include-in-header:
+        - text: |
+            \usepackage{mainsub}
+      format-resources:
+        - mainsub.sty
+        - mainsub-macros.tex
+    # ------------------------------------------------------------------ HTML
+    html:
+      theme: [default, mainsub.scss]
+      # MathJax 4: its default font is New Computer Modern, the same maths font as the PDFs
+      html-math-method:
+        method: mathjax
+        url: "https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js"
+      template-partials:
+        - partials/title-block.html
+      include-in-header:
+        - mathjax-config.html
+      format-links: false
+      embed-resources: true
+      toc: true
+      toc-location: left
+      toc-depth: 3
+      code-fold: true
+      code-tools: true
+      code-copy: hover
+      highlight-style: mainsub.theme
+      link-external-icon: false
+      smooth-scroll: true
+      fig-width: 7
+      fig-height: 4.2
+      fig-dpi: 96
+      fig-align: center
+      execute:
+        echo: true
+    # ------------------------------------------------------------------ PDF via Typst
+    typst:
+      fig-width: 6.2
+      fig-height: 3.6
+      fig-format: svg
+      execute:
+        echo: false
+      highlight-style: mainsub.theme
+      template-partials:
+        - partials/typst-template.typ
+        - partials/typst-show.typ
+        - partials/biblio.typ
+      format-resources:
+        - mainsub.typ
+        - mainsub.tmTheme
+        - gb7714-author-date.csl

@@ -1,0 +1,116 @@
+%% mainsub.tex — pandoc LaTeX template behind mainsub::pdf_report().
+%% The design itself lives in mainsub.sty; this file only carries the plumbing
+%% pandoc's LaTeX writer expects (lists, tables, highlighting, citeproc).
+\documentclass[11pt$for(classoption)$,$classoption$$endfor$]{article}
+\usepackage[lang=$if(lang)$$lang$$else$en$endif$$if(papersize)$,paper=$papersize$$endif$$if(mainsub-opts)$,$mainsub-opts$$endif$]{mainsub}
+$if(numbersections)$
+\setcounter{secnumdepth}{$if(secnumdepth)$$secnumdepth$$else$3$endif$}
+$else$
+\setcounter{secnumdepth}{-\maxdimen}
+$endif$
+\providecommand{\tightlist}{\setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setlength{\emergencystretch}{3em}
+$if(highlighting-macros)$
+$highlighting-macros$
+$endif$
+$if(verbatim-in-note)$
+\usepackage{fancyvrb}
+$endif$
+$if(tables)$
+\usepackage{longtable,booktabs,array,calc}
+$if(multirow)$
+\usepackage{multirow}
+$endif$
+\newcounter{none}
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
+$endif$
+% graphics: \pandocbounded (pandoc >= 3.2) and \maxwidth (older pandoc)
+\makeatletter
+\newsavebox\pandoc@box
+\newcommand*\pandocbounded[1]{%
+  \sbox\pandoc@box{#1}%
+  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
+  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi
+  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}\else\usebox{\pandoc@box}\fi}
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\def\fps@figure{htbp}
+\makeatother
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+$if(strikeout)$
+\usepackage{soul}
+$endif$
+$if(csl-refs)$
+% citeproc output: paragraph entries (pandoc < 3.1.8) or \bibitem entries (newer) both work
+\NewDocumentCommand\citeproctext{}{}
+\NewDocumentCommand\citeproc{mm}{\hyperlink{#1}{#2}}
+\newlength{\cslhangindent}\setlength{\cslhangindent}{1.5em}
+\newlength{\csllabelwidth}\setlength{\csllabelwidth}{3em}
+\newlength{\cslentryspacing}\setlength{\cslentryspacing}{0em}
+\newenvironment{CSLReferences}[2]
+ {\setlength{\parindent}{0pt}%
+  \ifodd #1 \let\oldpar\par \def\par{\hangindent=\cslhangindent\oldpar}\fi
+  \setlength{\parskip}{#2\baselineskip}%
+  \def\bibitem[##1]##2{\par\leavevmode\hypertarget{##2}{}\ignorespaces}}
+ {\par}
+\newcommand{\CSLBlock}[1]{\hfill\break\parbox[t]{\linewidth}{\strut\ignorespaces#1\strut}}
+\newcommand{\CSLLeftMargin}[1]{\parbox[t]{\csllabelwidth}{\strut#1\strut}}
+\newcommand{\CSLRightInline}[1]{\parbox[t]{\linewidth - \csllabelwidth}{\strut#1\strut}}
+\newcommand{\CSLIndent}[1]{\hspace{\cslhangindent}#1}
+$endif$
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{}
+$for(header-includes)$
+$header-includes$
+$endfor$
+
+$if(title)$
+\title{$title$}
+$endif$
+$if(subtitle)$
+\subtitle{$subtitle$}
+$endif$
+\author{$for(author)$$author$$sep$ \and $endfor$}
+$if(affiliation)$
+\affiliation{$affiliation$}
+$endif$
+$if(email)$
+\email{$email$}
+$endif$
+\date{$date$}
+$if(keywords)$
+\keywords{$for(keywords)$$keywords$$sep$$if(mainsub-zh)$；$else$; $endif$$endfor$}
+$endif$
+$if(short-title)$
+\shorttitle{$short-title$}
+$endif$
+
+\begin{document}
+$for(include-before)$
+$include-before$
+
+$endfor$
+$if(abstract)$
+\begin{abstract}
+$abstract$
+\end{abstract}
+$endif$
+$if(title)$
+\maketitle
+$endif$
+$if(toc)$
+{\setcounter{tocdepth}{$if(toc-depth)$$toc-depth$$else$2$endif$}\tableofcontents}
+$endif$
+$body$
+
+$for(include-after)$
+$include-after$
+
+$endfor$
+\end{document}

@@ -1,0 +1,148 @@
+/* ==========================================================================
+   mainsub — shared screen styles for every HTML route (Quarto and R Markdown)
+   Written against plain pandoc HTML (sections, figure, table, pre.sourceCode),
+   so the same rules serve both. No web fonts: system fonts only, so a single
+   .html file stays small and renders the same offline or behind the GFW.
+   ========================================================================== */
+
+:root {
+  --ms-ink: #1a1a1a;
+  --ms-muted: #6b6b6b;
+  --ms-rule: #d9d6cf;
+  --ms-hair: #ebe8e2;
+  --ms-accent: #7b2d26;
+  --ms-code-bg: #f6f5f1;
+  --ms-select: #ecdcd2;
+  --ms-sans: system-ui, -apple-system, "Segoe UI", "Noto Sans", "Helvetica Neue", Arial,
+    "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC",
+    "Source Han Sans SC", sans-serif;
+  --ms-mono: "JetBrains Mono", "Cascadia Mono", "SF Mono", Menlo, Consolas, "DejaVu Sans Mono",
+    "Noto Sans Mono CJK SC", monospace;
+}
+
+/* ---------------------------------------------------------------- text */
+body {
+  color: var(--ms-ink);
+  font-family: var(--ms-sans);
+  font-kerning: normal;
+  font-variant-numeric: lining-nums;
+  text-rendering: optimizeLegibility;
+  line-height: 1.7;
+}
+html:lang(zh) body { line-height: 1.8; }
+p { margin: 0 0 1em; }
+::selection { background: var(--ms-select); }
+strong, b { font-weight: 650; }
+html:lang(zh) em { font-style: normal; font-weight: 650; } /* Chinese has no italic */
+
+a { color: var(--ms-accent); text-decoration: underline; text-decoration-thickness: 1px;
+    text-underline-offset: .18em; text-decoration-color: rgba(123, 45, 38, .35); }
+a:hover { text-decoration-color: var(--ms-accent); }
+/* Cross-references and footnote marks stay in ink, as they would in print. */
+a[href^="#"], a.quarto-xref { color: inherit; text-decoration-style: dotted;
+    text-decoration-color: var(--ms-rule); }
+a[href^="#"]:hover { text-decoration-color: var(--ms-ink); }
+
+/* ---------------------------------------------------------------- headings */
+h1, h2, h3, h4, h5 { color: var(--ms-ink); font-weight: 650; line-height: 1.35;
+    letter-spacing: 0; border: 0; padding: 0; }
+.level1 > :is(h1, h2) { font-size: 1.36em; margin: 2.2em 0 .75em; }
+.level2 > :is(h2, h3) { font-size: 1.12em; margin: 1.8em 0 .6em; }
+.level3 > :is(h3, h4) { font-size: 1em; margin: 1.5em 0 .5em; }
+html:lang(en) .level3 > :is(h3, h4) { font-style: italic; font-weight: 500; }
+.level4 > :is(h4, h5) { font-size: 1em; margin: 1.2em 0 .4em; }
+.header-section-number { font-variant-numeric: tabular-nums; }
+/* Hanging section numbers, like the PDF — only where there is room for them. */
+@media (min-width: 1000px) {
+  :is(h1, h2, h3, h4) > .header-section-number {
+    display: inline-block; min-width: 3em; margin-left: -3em;
+    padding-right: .75em; text-align: right; margin-right: -.3em;
+  }
+}
+
+/* ---------------------------------------------------------------- title block */
+.ms-title-block { margin: 0 0 2.2em; padding: 0 0 1.4em; border-bottom: 1px solid var(--ms-rule); }
+.ms-title-block .title { font-size: 2em; font-weight: 700; line-height: 1.25; margin: 0 0 .35em; }
+.ms-title-block .subtitle { font-size: 1.15em; font-weight: 400; color: var(--ms-ink); margin: 0 0 1.3em; }
+html:lang(en) .ms-title-block .subtitle { font-style: italic; }
+.ms-meta p { margin: 0; line-height: 1.6; }
+.ms-meta .ms-affil, .ms-meta .ms-email, .ms-meta .date { color: var(--ms-muted); font-size: .92em; }
+.ms-meta .ms-email a { color: inherit; font-family: var(--ms-mono); font-size: .95em; }
+.ms-title-block .abstract { margin-top: 1.6em; font-size: .93em; }
+.ms-title-block .abstract p:last-child { margin-bottom: 0; }
+.ms-title-block .ms-label { float: left; margin-right: .9em; font-weight: 700; }
+html:lang(en) .ms-title-block .abstract .ms-label { font-weight: 500; font-variant: small-caps;
+    text-transform: lowercase; letter-spacing: .05em; }
+html:lang(en) .ms-title-block .ms-keywords .ms-label { font-weight: 400; font-style: italic; }
+.ms-title-block .ms-keywords { margin: .5em 0 0; font-size: .93em; }
+
+/* ---------------------------------------------------------------- figures & tables */
+figure { margin: 1.8em 0; }
+img { max-width: 100%; height: auto; }
+figcaption, .figure-caption, caption, .table-caption {
+  color: var(--ms-ink); font-size: .9em; line-height: 1.55; text-align: center;
+  text-wrap: balance; font-style: normal;
+}
+figcaption { margin-top: .7em; }
+
+/* Three-line table: heavy top and bottom rules, a light one under the header. */
+table, table.table { width: auto; border-collapse: collapse; margin: 1.4em auto; font-size: .92em;
+  font-variant-numeric: tabular-nums lining-nums;
+  border-top: 1.5px solid var(--ms-ink) !important; border-bottom: 1.5px solid var(--ms-ink) !important; }
+table caption { caption-side: top; padding: 0 0 .6em; }
+thead th, thead td { border-bottom: 1px solid var(--ms-ink) !important; font-weight: 600; }
+th, td { padding: .38em .8em; border: 0; background: none !important; box-shadow: none !important; }
+tbody tr, tbody td, tbody th { border: 0 !important; }
+
+/* ---------------------------------------------------------------- code */
+pre, code, kbd, samp { font-family: var(--ms-mono); }
+:not(pre) > code { color: var(--ms-ink); background: var(--ms-code-bg); padding: .1em .3em;
+  border-radius: 2px; font-size: .86em; }
+div.sourceCode, pre.sourceCode { background: var(--ms-code-bg); border: 0; border-radius: 0; }
+pre { font-size: .84em; line-height: 1.55; padding: .8em 1em; margin: 0 0 1.2em;
+  overflow-x: auto; tab-size: 2; }
+div.sourceCode > pre.sourceCode { margin: 0; }
+div.sourceCode { margin: 0 0 1.2em; }
+/* Results sit in grey without a box, so code and output never blur together. */
+.cell-output pre, pre:not(.sourceCode):not([class]) { background: none; color: var(--ms-muted);
+  padding: .1em 0 .1em 1em; }
+details.code-fold > summary, details.ms-fold > summary { cursor: pointer; color: var(--ms-muted);
+  font-size: .85em; margin: 0 0 .4em; user-select: none; }
+
+/* ---------------------------------------------------------------- maths */
+mjx-container[display="true"] { overflow-x: auto; overflow-y: hidden; max-width: 100%; }
+.math.display { display: block; overflow-x: auto; }
+
+/* ---------------------------------------------------------------- theorems */
+:is(div.theorem, div.lemma, div.corollary, div.proposition, div.conjecture,
+    div.definition, div.example, div.exercise, div.assumption, div.remark) { margin: 1.3em 0; }
+html:lang(en) :is(div.theorem, div.lemma, div.corollary, div.proposition, div.conjecture) { font-style: italic; }
+html:lang(en) :is(div.theorem, div.lemma, div.corollary, div.proposition, div.conjecture) :is(strong, .theorem-title, .math) { font-style: normal; }
+.theorem-title strong, .theorem-title { font-weight: 650; }
+div.proof { margin: 1em 0 1.4em; }
+div.proof:not(.remark):not(.solution) > p:last-child::after { content: "□"; float: right; margin-left: 1em; }
+html:lang(zh) .proof-title { margin-right: .8em; }
+html:lang(zh) :is(.proof-title, span.proof) em { font-style: normal; font-weight: 650; }
+
+/* ---------------------------------------------------------------- the rest */
+ul, ol { padding-left: 1.6em; margin: 0 0 1em; }
+li { margin: .2em 0; }
+li > p { margin: 0; }
+blockquote { margin: 1.2em 0; padding: 0 0 0 1em; border-left: 2px solid var(--ms-rule);
+  color: var(--ms-muted); font-size: 1em; }
+hr { border: 0; border-top: 1px solid var(--ms-rule); opacity: 1; margin: 2em 0; }
+.footnotes, section.footnotes { font-size: .88em; }
+.csl-entry { margin: 0 0 .55em 1.6em !important; padding: 0 !important; text-indent: -1.6em !important; font-size: .94em; }
+.csl-entry a { word-break: break-all; }
+
+/* ---------------------------------------------------------------- print */
+@media print {
+  :root { --ms-code-bg: #f4f4f4; }
+  body { font-size: 10.5pt; }
+  nav#TOC, #TOC, #quarto-sidebar, #quarto-margin-sidebar, .quarto-title-banner,
+  .code-tools-button, #quarto-back-to-top, details.code-fold > summary { display: none !important; }
+  a { color: inherit !important; text-decoration: none !important; }
+  pre { white-space: pre-wrap; }
+  figure, table, pre, .theorem { break-inside: avoid; }
+  :is(h1, h2, h3) { break-after: avoid; }
+}

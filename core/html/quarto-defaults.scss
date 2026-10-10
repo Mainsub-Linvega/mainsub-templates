@@ -1,0 +1,46 @@
+// Bootstrap / Quarto variables. Everything visual flows from the same six colours
+// as the PDF: ink, muted, rule, hairline, accent, code background.
+$ms-ink: #1a1a1a;
+$ms-muted: #6b6b6b;
+$ms-rule: #d9d6cf;
+$ms-hair: #ebe8e2;
+$ms-accent: #7b2d26;
+$ms-code-bg: #f6f5f1;
+
+$body-color: $ms-ink;
+$body-bg: #ffffff;
+$primary: $ms-accent;
+$link-color: $ms-accent;
+$headings-color: $ms-ink;
+$headings-font-weight: 650;
+$font-family-sans-serif: system-ui, -apple-system, "Segoe UI", "Noto Sans", "Helvetica Neue", Arial,
+  "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", "Source Han Sans SC", sans-serif;
+$font-family-monospace: "JetBrains Mono", "Cascadia Mono", "SF Mono", Menlo, Consolas, "DejaVu Sans Mono",
+  "Noto Sans Mono CJK SC", monospace;
+$font-size-root: 17px;
+$line-height-base: 1.7;
+
+$code-color: $ms-ink;
+$code-bg: $ms-code-bg;
+$code-block-bg: $ms-code-bg;
+$code-block-bg-padding: .8em;
+$code-block-border-left: false;
+
+$toc-color: $ms-muted;
+$toc-font-size: .82rem;
+$toc-active-border: $ms-ink;
+$toc-inactive-border: $ms-hair;
+
+$table-border-color: $ms-ink;
+$border-color: $ms-hair;
+
+$callout-border-width: 2px;
+$callout-color-note: $ms-muted;
+$callout-color-tip: $ms-muted;
+$callout-color-important: $ms-accent;
+$callout-color-warning: $ms-accent;
+$callout-color-caution: $ms-accent;
+
+$grid-body-width: 720px;
+$grid-sidebar-width: 230px;
+$grid-margin-width: 220px;

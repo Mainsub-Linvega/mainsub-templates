@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="$if(lang)$$lang$$else$en$endif$">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="generator" content="mainsub::html_report">
+$for(author-meta)$
+<meta name="author" content="$author-meta$">
+$endfor$
+<title>$if(pagetitle)$$pagetitle$$else$$title$$endif$</title>
+<style>
+$if(highlighting-css)$
+$highlighting-css$
+$endif$
+</style>
+$for(css)$
+<link rel="stylesheet" href="$css$">
+$endfor$
+$for(header-includes)$
+$header-includes$
+$endfor$
+$if(mainsub-mathjax-url)$
+<script>
+/* Loaded by a script, so self-contained files do not embed MathJax (fonts would be missing anyway). */
+(function () {
+  var s = document.createElement("script");
+  s.src = "$mainsub-mathjax-url$"; s.async = true;
+  document.head.appendChild(s);
+})();
+</script>
+$endif$
+</head>
+<body>
+$for(include-before)$
+$include-before$
+$endfor$
+<div class="ms-page">
+$if(title)$
+<header id="title-block-header" class="ms-title-block">
+<h1 class="title">$title$</h1>
+$if(subtitle)$
+<p class="subtitle">$subtitle$</p>
+$endif$
+<div class="ms-meta">
+$if(author)$
+<p class="ms-authors">$for(author)$$author$$sep$, $endfor$</p>
+$endif$
+$if(affiliation)$
+<p class="ms-affil">$affiliation$</p>
+$endif$
+$if(email)$
+<p class="ms-email"><a href="mailto:$email$">$email$</a></p>
+$endif$
+$if(date)$
+<p class="date">$date$</p>
+$endif$
+</div>
+$if(abstract)$
+<div class="abstract"><span class="ms-label">$if(mainsub-zh)$摘要$else$Abstract$endif$</span>
+$abstract$
+</div>
+$endif$
+$if(keywords)$
+<p class="ms-keywords"><span class="ms-label">$if(mainsub-zh)$关键词$else$Keywords$endif$</span>$for(keywords)$$keywords$$sep$$if(mainsub-zh)$；$else$; $endif$$endfor$</p>
+$endif$
+</header>
+$endif$
+$if(toc)$
+<nav id="TOC" role="doc-toc">
+<h2 id="toc-title">$if(toc-title)$$toc-title$$else$$if(mainsub-zh)$目录$else$Contents$endif$$endif$</h2>
+$table-of-contents$
+</nav>
+$endif$
+<main id="content">
+$body$
+</main>
+</div>
+$for(include-after)$
+$include-after$
+$endfor$
+<script>
+/* Highlight the current section in the side TOC (no libraries). */
+(function () {
+  var toc = document.getElementById("TOC");
+  if (!toc || !("IntersectionObserver" in window)) return;
+  var links = {}, current = null;
+  toc.querySelectorAll("a[href^='#']").forEach(function (a) { links[decodeURIComponent(a.hash.slice(1))] = a; });
+  var obs = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (e.isIntersecting && links[e.target.id]) {
+        if (current) current.classList.remove("active");
+        current = links[e.target.id]; current.classList.add("active");
+      }
+    });
+  }, { rootMargin: "0px 0px -75% 0px" });
+  document.querySelectorAll("main section[id]").forEach(function (s) { obs.observe(s); });
+})();
+</script>
+</body>
+</html>

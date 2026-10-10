@@ -1,0 +1,5 @@
+name: mainsub report
+description: >
+  A quiet academic report: PDF via XeLaTeX and a small self-contained HTML,
+  sharing one design. Chinese or English.
+create_dir: true

@@ -1,0 +1,12 @@
+$if(has-frontmatter)$
+\frontmatter
+$endif$
+$-- the abstract is collected first so that it sits inside the title block
+$if(abstract)$
+\begin{abstract}
+$abstract$
+\end{abstract}
+$endif$
+$if(title)$
+\maketitle
+$endif$

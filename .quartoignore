@@ -1,0 +1,12 @@
+# `quarto use template Mainsub-Linvega/mainsub-templates` copies only
+# template.qmd, references.bib and _extensions/ — not the rest of the repo.
+core/
+latex/
+typst/
+r/
+python/
+scripts/
+gallery/
+Makefile
+install.sh
+README.zh-CN.md

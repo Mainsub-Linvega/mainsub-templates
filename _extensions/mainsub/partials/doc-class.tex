@@ -1,0 +1,9 @@
+\documentclass[
+$if(fontsize)$
+  $fontsize$,
+$endif$
+$for(classoption)$
+  $classoption$$sep$,
+$endfor$
+]{$documentclass$}
+\PassOptionsToPackage{lang=$if(lang)$$lang$$else$en$endif$$if(papersize)$,paper=$papersize$$endif$$if(mainsub.font)$,font=$mainsub.font$$endif$$if(mainsub.review)$,review$endif$$if(mainsub.numbering)$,numbering=$mainsub.numbering$$endif$}{mainsub}

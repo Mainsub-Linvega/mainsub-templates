@@ -1,0 +1,463 @@
+%% mainsub.sty -- the shared design core for every LaTeX-based route
+%% (plain LaTeX via mainsub-report.cls, R Markdown -> PDF, Quarto -> PDF).
+%%
+%% Engine : XeLaTeX (recommended) or LuaLaTeX.
+%% Options: lang      = en | zh            (anything starting with "zh" counts as zh)
+%%          font      = newcm | libertinus | stix
+%%          review    = true | false       (line numbers + draft stamp, for sending drafts)
+%%          paper     = a4 | letter
+%%          numbering = plain | section    (theorem / equation numbers)
+%%          macros    = true | false       (load mainsub-macros.tex)
+%%          titleblock= true | false       (false: leave \maketitle alone)
+%%
+%% Everything here is deliberately quiet: one ink colour, one muted accent used
+%% only for URLs, no boxes, no rules except where print tradition puts them.
+\NeedsTeXFormat{LaTeX2e}[2022/06/01]
+\ProvidesPackage{mainsub}[2026/10/10 v0.1.0 Mainsub report design]
+
+\RequirePackage{iftex}
+\RequireTUTeX % XeLaTeX or LuaLaTeX; pdfLaTeX cannot do the fonts below
+
+%% ---------------------------------------------------------------- options
+\ExplSyntaxOn
+\tl_new:N  \l__mainsub_lang_tl
+\tl_new:N  \l__mainsub_font_tl
+\tl_new:N  \l__mainsub_paper_tl
+\tl_new:N  \l__mainsub_numbering_tl
+\bool_new:N \l__mainsub_review_bool
+\bool_new:N \l__mainsub_macros_bool
+\bool_new:N \l__mainsub_titleblock_bool
+\bool_new:N \g_mainsub_zh_bool
+
+\keys_define:nn { mainsub }
+  {
+    lang       .tl_set:N   = \l__mainsub_lang_tl ,
+    lang       .initial:n  = en ,
+    font       .tl_set:N   = \l__mainsub_font_tl ,
+    font       .initial:n  = newcm ,
+    paper      .tl_set:N   = \l__mainsub_paper_tl ,
+    paper      .initial:n  = a4 ,
+    numbering  .tl_set:N   = \l__mainsub_numbering_tl ,
+    numbering  .initial:n  = plain ,
+    review     .bool_set:N = \l__mainsub_review_bool ,
+    review     .default:n  = true ,
+    review     .initial:n  = false ,
+    macros     .bool_set:N = \l__mainsub_macros_bool ,
+    macros     .default:n  = true ,
+    macros     .initial:n  = true ,
+    titleblock .bool_set:N = \l__mainsub_titleblock_bool ,
+    titleblock .default:n  = true ,
+    titleblock .initial:n  = true ,
+    unknown    .code:n     = {}
+  }
+\ProcessKeyOptions [ mainsub ]
+
+% "zh", "zh-CN", "zh-Hans" ... all mean Chinese
+\str_if_eq:eeT { \str_range:Nnn \l__mainsub_lang_tl { 1 } { 2 } } { zh }
+  { \bool_gset_true:N \g_mainsub_zh_bool }
+
+\cs_new:Npn \mainsub_if_zh:TF #1#2 { \bool_if:NTF \g_mainsub_zh_bool {#1} {#2} }
+\NewExpandableDocumentCommand \MainsubIfZh { +m +m } { \mainsub_if_zh:TF {#1} {#2} }
+\NewExpandableDocumentCommand \MainsubIfReview { +m +m }
+  { \bool_if:NTF \l__mainsub_review_bool {#1} {#2} }
+\ExplSyntaxOff
+
+%% ---------------------------------------------------------------- page
+\RequirePackage{xcolor}
+\definecolor{mainsubink}{HTML}{1A1A1A}
+\definecolor{mainsubgray}{HTML}{6B6B6B}
+\definecolor{mainsubrule}{HTML}{9A9A9A}
+\definecolor{mainsubaccent}{HTML}{7B2D26} % oxblood; only for URLs and the draft stamp
+
+\ExplSyntaxOn
+\str_if_eq:VnTF \l__mainsub_paper_tl { letter }
+  { \PassOptionsToPackage { letterpaper , textheight = 9in } { geometry } }
+  { \PassOptionsToPackage { a4paper , textheight = 234mm } { geometry } }
+\ExplSyntaxOff
+% ~68 Latin characters or ~36 CJK characters per line at 11pt
+\RequirePackage[textwidth=138mm, top=30mm, headsep=9mm, footskip=12mm,
+  hcentering, marginparwidth=22mm, marginparsep=5mm]{geometry}
+
+%% ---------------------------------------------------------------- maths before fonts
+\RequirePackage{amsmath}
+\RequirePackage{amsthm}
+\RequirePackage{mathtools}
+
+%% ---------------------------------------------------------------- Latin & maths fonts
+% Loaded by file name so they resolve through TeX Live on any OS (no fontconfig needed).
+\RequirePackage{unicode-math}
+\defaultfontfeatures{Ligatures=TeX}
+\ExplSyntaxOn
+\str_case_e:nnF { \l__mainsub_font_tl }
+  {
+    { newcm }
+      {
+        % The "Book" weight of New Computer Modern: the LaTeX look, but with enough
+        % colour to sit next to Source Han / Noto CJK and to survive screen reading.
+        \setmainfont{NewCM10}
+          [ Extension = .otf , UprightFont = *-Book , ItalicFont = *-BookItalic ,
+            BoldFont = *-Bold , BoldItalicFont = *-BoldItalic ]
+        \setsansfont{NewCMSans10}
+          [ Extension = .otf , UprightFont = *-Book , ItalicFont = *-BookOblique ,
+            BoldFont = *-Bold , BoldItalicFont = *-BoldOblique ]
+        \setmathfont{NewCMMath-Book.otf}
+      }
+    { libertinus }
+      {
+        \setmainfont{LibertinusSerif}
+          [ Extension = .otf , UprightFont = *-Regular , ItalicFont = *-Italic ,
+            BoldFont = *-Semibold , BoldItalicFont = *-SemiboldItalic ]
+        \setsansfont{LibertinusSans}
+          [ Extension = .otf , UprightFont = *-Regular , ItalicFont = *-Italic ,
+            BoldFont = *-Bold ]
+        \setmathfont{LibertinusMath-Regular.otf}
+      }
+    { stix }
+      {
+        \setmainfont{STIXTwoText}
+          [ Extension = .otf , UprightFont = *-Regular , ItalicFont = *-Italic ,
+            BoldFont = *-SemiBold , BoldItalicFont = *-SemiBoldItalic ]
+        \setsansfont{NewCMSans10}
+          [ Extension = .otf , UprightFont = *-Book , ItalicFont = *-BookOblique ,
+            BoldFont = *-Bold , BoldItalicFont = *-BoldOblique ]
+        \setmathfont{STIXTwoMath-Regular.otf}
+      }
+  }
+  { \PackageError { mainsub } { Unknown~font~preset~'\l__mainsub_font_tl' } { Use~newcm,~libertinus~or~stix. } }
+
+% Code: Inconsolata is narrow, legible at \small and matches CM's x-height closely.
+\IfFontExistsTF { Inconsolatazi4-Regular.otf }
+  { \setmonofont{Inconsolatazi4}[ Extension = .otf , UprightFont = *-Regular ,
+      BoldFont = *-Bold , ItalicFont = *-Regular , ItalicFeatures = { FakeSlant = 0.12 } ,
+      Scale = MatchLowercase ] }
+  { \setmonofont{NewCMMono10}[ Extension = .otf , UprightFont = *-Book ,
+      BoldFont = *-Bold , ItalicFont = *-BookItalic , Scale = MatchLowercase ] }
+\ExplSyntaxOff
+
+%% ---------------------------------------------------------------- CJK
+% ctex gives correct Chinese punctuation, spacing and line breaking.
+% scheme=chinese (zh): Chinese names (图/表/目录), 2em indent, 1.3 linespread.
+% scheme=plain   (en): CJK support only, English conventions untouched.
+\MainsubIfZh
+  {\PassOptionsToPackage{scheme=chinese, heading=false, zihao=false, punct=quanjiao}{ctex}}
+  {\PassOptionsToPackage{scheme=plain}{ctex}}
+\RequirePackage[fontset=none]{ctex}
+
+\ExplSyntaxOn
+% First installed family wins; Fandol (ships with TeX Live) is the last resort.
+\cs_new_protected:Npn \__mainsub_pick_font:Nnn #1#2#3
+  {
+    \tl_set:Ne #1 {#3}
+    % The trailing ":" stops XeTeX from asking METAFONT for a missing name.
+    \clist_map_inline:nn {#2}
+      { \IfFontExistsTF {##1:} { \tl_set:Nn #1 {##1} \clist_map_break: } { } }
+  }
+\tl_new:N \l__mainsub_cjk_serif_tl
+\tl_new:N \l__mainsub_cjk_sans_tl
+\tl_new:N \l__mainsub_cjk_kai_tl
+\tl_new:N \l__mainsub_cjk_mono_tl
+\__mainsub_pick_font:Nnn \l__mainsub_cjk_serif_tl
+  { Noto~Serif~CJK~SC, Source~Han~Serif~SC, Source~Han~Serif~CN, Songti~SC, STSong, SimSun }
+  { FandolSong-Regular.otf }
+\__mainsub_pick_font:Nnn \l__mainsub_cjk_sans_tl
+  { Noto~Sans~CJK~SC, Source~Han~Sans~SC, Source~Han~Sans~CN, PingFang~SC, Microsoft~YaHei, SimHei }
+  { FandolHei-Regular.otf }
+\__mainsub_pick_font:Nnn \l__mainsub_cjk_kai_tl
+  { LXGW~WenKai, LXGW~WenKai~GB, Kaiti~SC, STKaiti, KaiTi }
+  { \l__mainsub_cjk_sans_tl } % no Kai installed: emphasis falls back to Hei, the other Chinese convention
+\__mainsub_pick_font:Nnn \l__mainsub_cjk_mono_tl
+  { Noto~Sans~Mono~CJK~SC, Sarasa~Mono~SC, Source~Han~Sans~SC, PingFang~SC, Microsoft~YaHei }
+  { FandolHei-Regular.otf }
+
+% Fonts without a real bold face get a synthetic one; real bolds are left alone.
+\cs_new:Npn \__mainsub_bold_opts:n #1
+  {
+    \str_case_e:nnF {#1}
+      {
+        { FandolSong-Regular.otf } { BoldFont = FandolSong-Bold.otf }
+        { FandolHei-Regular.otf }  { BoldFont = FandolHei-Bold.otf }
+        { SimSun }  { AutoFakeBold = 2.5 }
+        { STSong }  { AutoFakeBold = 2.5 }
+        { SimHei }  { AutoFakeBold = 2.5 }
+        { KaiTi }   { AutoFakeBold = 2.5 }
+        { STKaiti } { AutoFakeBold = 2.5 }
+        { FandolKai-Regular.otf } { AutoFakeBold = 2.5 }
+      }
+      { }
+  }
+% fontspec cannot mix a family found by name with a face found by file name,
+% so Kai becomes the CJK italic only when both come from the same place.
+\cs_new_protected:Npn \__mainsub_set_cjk:
+  {
+    \str_if_eq:VnT \l__mainsub_cjk_serif_tl { FandolSong-Regular.otf }
+      { \tl_if_in:NnT \l__mainsub_cjk_kai_tl { .otf } { \tl_set:Nn \l__mainsub_cjk_kai_tl { FandolKai-Regular.otf } } }
+    \tl_if_in:NnTF \l__mainsub_cjk_serif_tl { .otf }
+      { \bool_set_true:N \l_tmpb_bool } { \bool_set_false:N \l_tmpb_bool }
+    \tl_if_in:NnTF \l__mainsub_cjk_kai_tl { .otf }
+      { \bool_set_eq:NN \l_tmpa_bool \l_tmpb_bool }
+      { \bool_set_inverse:N \l_tmpb_bool \bool_set_eq:NN \l_tmpa_bool \l_tmpb_bool }
+    \use:e
+      {
+        \exp_not:N \setCJKmainfont { \l__mainsub_cjk_serif_tl }
+          [ \__mainsub_bold_opts:n { \l__mainsub_cjk_serif_tl }
+            \bool_if:NT \l_tmpa_bool
+              {
+                % \emph and \itshape on Chinese text -> Kai, the traditional "italic" of CJK
+                , ItalicFont = { \l__mainsub_cjk_kai_tl }
+                , BoldItalicFont = { \l__mainsub_cjk_kai_tl }
+                , BoldItalicFeatures = { FakeBold = 2.5 }
+              }
+          ]
+        \exp_not:N \setCJKsansfont { \l__mainsub_cjk_sans_tl }
+          [ \__mainsub_bold_opts:n { \l__mainsub_cjk_sans_tl } ]
+        \exp_not:N \setCJKmonofont { \l__mainsub_cjk_mono_tl }
+          [ \__mainsub_bold_opts:n { \l__mainsub_cjk_mono_tl } ]
+        \exp_not:N \setCJKfamilyfont { zhkai } { \l__mainsub_cjk_kai_tl }
+          [ \__mainsub_bold_opts:n { \l__mainsub_cjk_kai_tl } ]
+      }
+  }
+\__mainsub_set_cjk:
+\ExplSyntaxOff
+\providecommand\kaishu{\CJKfamily{zhkai}}
+
+%% ---------------------------------------------------------------- rhythm
+\MainsubIfZh
+  {\linespread{1.25}\setlength{\parindent}{2em}}
+  {\linespread{1.06}\setlength{\parindent}{1.4em}}
+\setlength{\parskip}{0pt plus .5pt}
+\AtBeginDocument{\setlength{\parskip}{0pt plus .5pt}} % pandoc templates may reset it
+\RequirePackage{microtype}
+\widowpenalty=3000 \clubpenalty=3000 \displaywidowpenalty=1500
+\raggedbottom
+
+%% ---------------------------------------------------------------- headings
+% Numbers hang in the left margin, so every heading starts on the text edge.
+\RequirePackage{titlesec}
+\newcommand\mainsub@hang[1]{\llap{#1\hskip .85em}}
+\titleformat{\section}{\normalfont\large\bfseries\raggedright}{\mainsub@hang{\thesection}}{0pt}{}
+\titleformat{\subsection}{\normalfont\normalsize\bfseries\raggedright}{\mainsub@hang{\thesubsection}}{0pt}{}
+\titleformat{\subsubsection}{\normalfont\normalsize\itshape\raggedright}{\mainsub@hang{\thesubsubsection}}{0pt}{}
+\titleformat{\paragraph}[runin]{\normalfont\normalsize\bfseries}{\theparagraph\hskip .5em}{0pt}{}
+\titlespacing*{\section}{0pt}{1.9\baselineskip plus .5\baselineskip minus .2\baselineskip}{.75\baselineskip plus .15\baselineskip}
+\titlespacing*{\subsection}{0pt}{1.35\baselineskip plus .3\baselineskip minus .2\baselineskip}{.5\baselineskip plus .1\baselineskip}
+\titlespacing*{\subsubsection}{0pt}{1.1\baselineskip plus .3\baselineskip minus .1\baselineskip}{.4\baselineskip}
+\titlespacing*{\paragraph}{0pt}{.9\baselineskip plus .3\baselineskip}{.8em}
+% Chinese has no italic: the third level switches to Hei (sans) instead, as Chinese typesetting does.
+\MainsubIfZh{\titleformat{\subsubsection}{\normalfont\normalsize\sffamily\raggedright}{\mainsub@hang{\thesubsubsection}}{0pt}{}}{}
+
+%% ---------------------------------------------------------------- running heads
+\RequirePackage{fancyhdr}
+\def\mainsub@shorttitle{}
+\newcommand\shorttitle[1]{\gdef\mainsub@shorttitle{#1}}
+\let\mainsub@notitle\@title
+\newcommand\mainsub@headtitle{%
+  \ifx\mainsub@shorttitle\@empty
+    \ifx\@title\mainsub@notitle\else{\def\\{ }\def\thanks##1{}\def\footnote##1{}\@title}\fi
+  \else\mainsub@shorttitle\fi}
+\newcommand\mainsub@stamp{%
+  \MainsubIfReview{\textcolor{mainsubaccent}{\MainsubIfZh{草稿}{Draft}\,\textperiodcentered\,\today}}{}}
+\fancypagestyle{mainsub}{%
+  \fancyhf{}%
+  \fancyhead[L]{\footnotesize\color{mainsubgray}\MainsubIfZh{}{\itshape}\mainsub@headtitle}%
+  \fancyhead[R]{\footnotesize\MainsubIfReview{\mainsub@stamp\quad}{}\color{mainsubgray}\thepage}%
+  \renewcommand\headrulewidth{0pt}\renewcommand\footrulewidth{0pt}}
+\fancypagestyle{plain}{%
+  \fancyhf{}%
+  \fancyhead[R]{\footnotesize\mainsub@stamp}%
+  \fancyfoot[C]{\footnotesize\color{mainsubgray}\thepage}%
+  \renewcommand\headrulewidth{0pt}\renewcommand\footrulewidth{0pt}}
+\setlength{\headheight}{14pt}
+\pagestyle{mainsub}
+\AtBeginDocument{\pagestyle{mainsub}}
+
+%% ---------------------------------------------------------------- title block
+\def\@subtitle{}\def\@keywords{}\def\@affiliation{}\def\@email{}
+\providecommand\subtitle[1]{}
+\renewcommand\subtitle[1]{\gdef\@subtitle{#1}}
+\newcommand\keywords[1]{\gdef\@keywords{#1}}
+\newcommand\affiliation[1]{\gdef\@affiliation{#1}}
+\newcommand\email[1]{\gdef\@email{#1}}
+\newif\ifmainsub@hasabstract
+\long\def\mainsub@abstract{}
+
+\newcommand\mainsubtitleblock{%
+  \begingroup
+    \raggedright\parindent\z@
+    \vspace*{-1.2\baselineskip}%
+    {\fontsize{19}{24}\selectfont\bfseries\@title\par}%
+    \ifx\@subtitle\@empty\else
+      \vskip .45\baselineskip
+      {\large\MainsubIfZh{}{\itshape}\@subtitle\par}%
+    \fi
+    \vskip 1.1\baselineskip
+    {\def\and{\unskip,\enskip\ignorespaces}\@author\par}%
+    \vskip .15\baselineskip
+    {\small\color{mainsubgray}%
+      \ifx\@affiliation\@empty\else\@affiliation\par\fi
+      \ifx\@email\@empty\else\texttt{\@email}\par\fi
+      \@date\par}%
+    \ifmainsub@hasabstract
+      \vskip 1.4\baselineskip
+      {\small
+        \MainsubIfZh{\textbf{\abstractname}\quad}{\textsc{\MakeLowercase{\abstractname}}\enskip}%
+        \mainsub@abstract\par}%
+    \fi
+    \ifx\@keywords\@empty\else
+      \vskip .5\baselineskip
+      {\small\MainsubIfZh{\textbf{关键词}\quad}{\textit{Keywords}\enskip}\@keywords\par}%
+    \fi
+    \vskip .9\baselineskip
+    {\color{mainsubrule}\rule{\linewidth}{.4pt}}\par
+    \vskip -.4\baselineskip
+  \endgroup}
+
+\ExplSyntaxOn
+\bool_if:NT \l__mainsub_titleblock_bool
+  {
+    % Collect the abstract instead of typesetting it, so it can live inside the title block.
+    % If \maketitle has already happened, typeset it immediately in the same style.
+    \newif\ifmainsub@titledone
+    \RenewDocumentEnvironment { abstract } { +b }
+      {
+        \ifmainsub@titledone
+          { \small \MainsubIfZh{\textbf{\abstractname}\quad}{\textsc{\MakeLowercase{\abstractname}}\enskip} #1 \par }
+          \vskip\baselineskip
+        \else
+          \global\mainsub@hasabstracttrue \gdef\mainsub@abstract{#1}
+        \fi
+      } { }
+    \RenewDocumentCommand \maketitle { }
+      {
+        \thispagestyle{plain}
+        \mainsubtitleblock
+        \global\mainsub@titledonetrue
+      }
+  }
+\ExplSyntaxOff
+
+%% ---------------------------------------------------------------- floats, captions, tables
+\RequirePackage{graphicx}
+\RequirePackage{booktabs}
+\RequirePackage{array}
+\RequirePackage{caption}
+\MainsubIfZh
+  {\captionsetup{font=small, labelfont=bf, labelsep=quad, skip=6pt, justification=justified, singlelinecheck=true}}
+  {\captionsetup{font=small, labelfont=bf, labelsep=period, skip=6pt, justification=justified, singlelinecheck=true}}
+\captionsetup[table]{position=top}
+\renewcommand\topfraction{.85}\renewcommand\bottomfraction{.7}
+\renewcommand\textfraction{.15}\renewcommand\floatpagefraction{.7}
+\setlength{\textfloatsep}{1.3\baselineskip plus .3\baselineskip minus .3\baselineskip}
+\setlength{\floatsep}{1.1\baselineskip plus .3\baselineskip}
+\setlength{\intextsep}{1.1\baselineskip plus .3\baselineskip}
+\renewcommand\arraystretch{1.12}
+\setlength{\aboverulesep}{.5ex}\setlength{\belowrulesep}{.6ex}
+\AddToHook{env/table/begin}{\small}
+\AddToHook{env/longtable/begin}{\small}
+\AddToHook{env/CSLReferences/begin}{\small\raggedright}
+
+%% ---------------------------------------------------------------- lists, footnotes, code
+\RequirePackage{enumitem}
+\setlist{topsep=.35\baselineskip plus .15\baselineskip, partopsep=0pt,
+         itemsep=.1\baselineskip, parsep=0pt}
+\setlist[itemize,1]{label=\textbullet}
+\setlist[itemize,2]{label=\textendash}
+\MainsubIfZh{\setlist{leftmargin=2em}}{}
+\setlength{\footnotesep}{.8\baselineskip}
+\renewcommand\footnoterule{\kern-3pt{\color{mainsubrule}\hrule width 4em height .4pt}\kern 2.6pt}
+
+\MainsubIfReview{\PassOptionsToPackage{mathlines}{lineno}}{} % fvextra loads lineno itself
+\RequirePackage{fvextra}
+\fvset{fontsize=\small, breaklines=true, breakanywhere=false}
+% Code output (knitr/Quarto "verbatim") sits in grey, so code and results never blur together.
+\AtBeginDocument{%
+  \@ifundefined{verbatim}{}{%
+    \RecustomVerbatimEnvironment{verbatim}{Verbatim}{fontsize=\small, formatcom=\color{mainsubgray}, breaklines=true}}}
+
+%% ---------------------------------------------------------------- theorems
+% Restyle amsthm's three built-in styles, so environments defined by pandoc,
+% Quarto or bookdown pick up the same look as ours.
+\MainsubIfZh
+  {\newtheoremstyle{plain}{.7\baselineskip}{.7\baselineskip}{\normalfont}{0pt}{\bfseries}{}{1em}{\thmname{#1}\thmnumber{\,#2}\thmnote{\,(#3)}}}
+  {\newtheoremstyle{plain}{.7\baselineskip}{.7\baselineskip}{\itshape}{0pt}{\bfseries}{.}{.5em}{\thmname{#1}\thmnumber{ #2}\thmnote{ {\mdseries(#3)}}}}
+\MainsubIfZh
+  {\newtheoremstyle{definition}{.7\baselineskip}{.7\baselineskip}{\normalfont}{0pt}{\bfseries}{}{1em}{\thmname{#1}\thmnumber{\,#2}\thmnote{\,(#3)}}}
+  {\newtheoremstyle{definition}{.7\baselineskip}{.7\baselineskip}{\normalfont}{0pt}{\bfseries}{.}{.5em}{\thmname{#1}\thmnumber{ #2}\thmnote{ {\mdseries(#3)}}}}
+\MainsubIfZh
+  {\newtheoremstyle{remark}{.5\baselineskip}{.5\baselineskip}{\normalfont}{0pt}{\bfseries}{}{1em}{\thmname{#1}\thmnumber{\,#2}\thmnote{\,(#3)}}}
+  {\newtheoremstyle{remark}{.5\baselineskip}{.5\baselineskip}{\normalfont}{0pt}{\itshape}{.}{.5em}{\thmname{#1}\thmnumber{ #2}\thmnote{ (#3)}}}
+
+
+% Chinese proofs: bold 证明, no full stop.
+\MainsubIfZh{%
+  \renewenvironment{proof}[1][\proofname]{\par\pushQED{\qed}\normalfont
+    \topsep6\p@\@plus6\p@\relax\trivlist\item[\hskip\labelsep\bfseries#1\hskip 1em]\ignorespaces}
+    {\popQED\endtrivlist\@endpefalse}}{}
+
+\ExplSyntaxOn
+\str_if_eq:VnT \l__mainsub_numbering_tl { section }
+  { \AtBeginDocument { \@ifundefined{c@section}{}{\numberwithin{equation}{section}} } }
+\ExplSyntaxOff
+% Environments are only created if nobody (Quarto, bookdown, the user) did so first.
+\ExplSyntaxOn
+% Every environment has its own counter (Theorem 1, Lemma 1, ...), like Quarto and bookdown.
+\cs_new_protected:Npn \__mainsub_thm_counter:
+  {
+    \str_if_eq:VnTF \l__mainsub_numbering_tl { section }
+      { \def\mainsub@thmwithin{section} }
+      { \def\mainsub@thmwithin{} }
+  }
+\cs_new_eq:NN \mainsub@thmcounter \__mainsub_thm_counter:
+\ExplSyntaxOff
+\newcommand\mainsub@newthm[4]{% style, env, en name, zh name
+  \@ifundefined{#2}{\theoremstyle{#1}%
+    \ExpandArgs{o}\mainsub@newthm@{\mainsub@thmwithin}{#2}{\MainsubIfZh{#4}{#3}}}{}}
+\newcommand\mainsub@newthm@[3]{%
+  \ifx\relax#1\relax\newtheorem{#2}{#3}\else\newtheorem{#2}{#3}[#1]\fi}
+\AddToHook{begindocument/before}{%
+  \mainsub@thmcounter
+  \mainsub@newthm{plain}{theorem}{Theorem}{定理}%
+  \mainsub@newthm{plain}{lemma}{Lemma}{引理}%
+  \mainsub@newthm{plain}{proposition}{Proposition}{命题}%
+  \mainsub@newthm{plain}{corollary}{Corollary}{推论}%
+  \mainsub@newthm{plain}{conjecture}{Conjecture}{猜想}%
+  \mainsub@newthm{definition}{definition}{Definition}{定义}%
+  \mainsub@newthm{definition}{assumption}{Assumption}{假设}%
+  \mainsub@newthm{definition}{example}{Example}{例}%
+  \mainsub@newthm{definition}{exercise}{Exercise}{习题}%
+  \mainsub@newthm{remark}{remark}{Remark}{注}%
+}
+% Quarto and bookdown number theorems within sections; follow the numbering= option instead.
+\AddToHook{begindocument/before}[mainsub/thmcounters]{%
+  \@for\mainsub@env:=theorem,lemma,proposition,corollary,conjecture,definition,assumption,%
+      example,exercise,remark,refremark,refsolution,solution\do{%
+    \@ifundefined{c@\mainsub@env}{}{\@ifundefined{c@section}{}{%
+      \ifx\mainsub@thmwithin\@empty
+        \expandafter\counterwithout\expandafter{\mainsub@env}{section}%
+      \else
+        \expandafter\counterwithin\expandafter{\mainsub@env}{section}%
+      \fi}}}}
+
+%% ---------------------------------------------------------------- links & metadata
+\AddToHook{begindocument/before}{%
+  \@ifpackageloaded{hyperref}{}{\usepackage[unicode, pdfusetitle]{hyperref}}%
+  \hypersetup{colorlinks=true, linkcolor=mainsubink, citecolor=mainsubink,
+    filecolor=mainsubink, urlcolor=mainsubaccent, pdfcreator={mainsub-templates},
+    bookmarksnumbered=true, pdfdisplaydoctitle=true}}
+\AtBeginDocument{\urlstyle{same}}
+
+%% ---------------------------------------------------------------- review mode
+\MainsubIfReview{%
+  \RequirePackage{lineno}
+  \renewcommand\linenumberfont{\normalfont\fontsize{6.5}{8}\selectfont\color{mainsubrule}}
+  \setlength\linenumbersep{1.2em}
+  \rightlinenumbers % the left margin already holds the hanging section numbers
+  \AtBeginDocument{\linenumbers}
+}{}
+
+%% ---------------------------------------------------------------- shared maths macros
+\ExplSyntaxOn
+\bool_if:NT \l__mainsub_macros_bool
+  { \file_if_exist_input:nF { mainsub-macros.tex } { \PackageWarning{mainsub}{mainsub-macros.tex~not~found} } }
+\ExplSyntaxOff
+
+\endinput

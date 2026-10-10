@@ -1,0 +1,13 @@
+[package]
+name = "mainsub-report"
+version = "0.1.0"
+entrypoint = "mainsub.typ"
+authors = ["Mainsub <https://github.com/Mainsub-Linvega>"]
+license = "MIT"
+description = "Quiet academic reports: LaTeX lecture-notes look, CJK-ready, three-line tables."
+keywords = ["report", "academic", "chinese", "statistics"]
+exclude = ["template/main.pdf"]
+
+[template]
+path = "template"
+entrypoint = "main.typ"

@@ -1,0 +1,8 @@
+export(pdf_report)
+export(html_report)
+export(theme_mainsub)
+export(scale_colour_mainsub)
+export(scale_color_mainsub)
+export(scale_fill_mainsub)
+export(use_mainsub_ggplot)
+export(mainsub_colors)

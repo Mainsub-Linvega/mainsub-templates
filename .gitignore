@@ -1,0 +1,30 @@
+# rendered output next to sources (the gallery/ folder is committed on purpose)
+/template.html
+/template.pdf
+*_files/
+.quarto/
+*.knit.md
+# LaTeX
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.run.xml
+*.synctex.gz
+*.xdv
+*.toc
+latex/template/*.pdf
+typst/template/*.pdf
+# R
+.Rhistory
+.RData
+.Rproj.user/
+r/..Rcheck/
+*.tar.gz
+# editors / OS
+.DS_Store
+*.swp

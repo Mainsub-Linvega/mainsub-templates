@@ -1,0 +1,32 @@
+/* ---------------------------------------------------------------- Quarto-specific */
+/* Quarto underlines h2 by default; the design does not. */
+#quarto-content h2, #quarto-content h3 { border-bottom: 0; padding-bottom: 0; }
+#title-block-header.ms-title-block { margin-block-end: 2.2em; }
+/* TOC: a quiet list with a hairline, the current section in ink. */
+#TOC, nav[role="doc-toc"] { font-size: .82rem; line-height: 1.45; }
+nav[role="doc-toc"] > h2, #toc-title { font-size: .78rem; font-weight: 600; color: var(--ms-muted);
+  letter-spacing: .04em; text-transform: uppercase; margin-bottom: .6em; }
+html:lang(zh) nav[role="doc-toc"] > h2, html:lang(zh) #toc-title { text-transform: none; letter-spacing: .1em; }
+nav[role="doc-toc"] a.nav-link { color: var(--ms-muted); text-decoration: none; }
+nav[role="doc-toc"] a.nav-link.active { color: var(--ms-ink); font-weight: 600; }
+/* Figures */
+.quarto-figure-center > figure > p, .quarto-figure-center > figure > div { text-align: center; }
+.quarto-float-caption, figcaption.figure-caption, .quarto-float-caption-top { margin-top: .7em;
+  text-align: center; font-size: .9em; }
+.table-caption, .quarto-float-caption-top { margin-bottom: .6em; }
+/* Code */
+div.sourceCode { border: 0 !important; border-radius: 0 !important; }
+.code-copy-button { opacity: .5; }
+.cell-output-display table { margin-left: auto; margin-right: auto; }
+.cell-output-stdout pre code, .cell-output-stderr pre code { color: var(--ms-muted); }
+/* Callouts: a hairline at the left, no tinted panels, no icons. */
+.callout { border: 0 !important; border-left: 2px solid var(--ms-rule) !important; border-radius: 0 !important;
+  background: none !important; box-shadow: none !important; padding-left: 1em !important; }
+.callout .callout-header { background: none !important; border: 0 !important; padding: 0 !important; }
+.callout .callout-icon-container { display: none; }
+.callout .callout-title-container { font-weight: 650; color: var(--ms-ink); }
+.callout-important, .callout-warning, .callout-caution { border-left-color: var(--ms-accent) !important; }
+/* Footnote / citation hover popups */
+.tippy-box { font-size: .85rem; }
+/* Bootstrap's .table padding is roomier vertically than a three-line table wants */
+table.table > :not(caption) > * > * { padding: .34em .9em; border-bottom-width: 0; }

@@ -1,0 +1,32 @@
+<header id="title-block-header" class="quarto-title-block ms-title-block">
+$if(title)$
+<h1 class="title">$title$</h1>
+$endif$
+$if(subtitle)$
+<p class="subtitle">$subtitle$</p>
+$endif$
+<div class="ms-meta">
+$if(by-author)$
+<p class="ms-authors">$for(by-author)$$it.name.literal$$sep$, $endfor$</p>
+$endif$
+$if(by-affiliation)$
+<p class="ms-affil">$for(by-affiliation)$$it.name$$sep$; $endfor$</p>
+$endif$
+$for(by-author)$
+$if(it.email)$
+<p class="ms-email"><a href="mailto:$it.email$">$it.email$</a></p>
+$endif$
+$endfor$
+$if(date)$
+<p class="date">$date$</p>
+$endif$
+</div>
+$if(abstract)$
+<div class="abstract"><span class="ms-label">$labels.abstract$</span>
+$abstract$
+</div>
+$endif$
+$if(keywords)$
+<p class="ms-keywords"><span class="ms-label">$labels.keywords$</span>$for(keywords)$$keywords$$sep$$if(mainsub-zh)$；$else$; $endif$$endfor$</p>
+$endif$
+</header>

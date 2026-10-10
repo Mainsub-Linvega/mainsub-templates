@@ -1,0 +1,49 @@
+%% mainsub-macros.tex -- maths shorthands shared by every route.
+%%
+%% LaTeX routes \input this file (mainsub.sty does it for you).
+%% The HTML and Typst routes expand these macros at build time with the
+%% mainsub Lua filter, so MathJax and Typst never need to know about them.
+%%
+%% Rules for adding your own:
+%%   * use \providecommand, so a document's own \newcommand wins;
+%%   * stick to amsmath-level TeX (\operatorname, \mathbb, \overset, ...),
+%%     which pandoc can expand and translate into Typst maths.
+
+% ---- probability ---------------------------------------------------------
+\providecommand{\E}{\mathbb{E}}
+\providecommand{\Prob}{\mathbb{P}}
+\providecommand{\Var}{\operatorname{Var}}
+\providecommand{\Cov}{\operatorname{Cov}}
+\providecommand{\Corr}{\operatorname{Corr}}
+\providecommand{\Bias}{\operatorname{Bias}}
+\providecommand{\MSE}{\operatorname{MSE}}
+\providecommand{\Normal}{\mathcal{N}}
+\providecommand{\iid}{\overset{\text{iid}}{\sim}}
+\providecommand{\indep}{\perp\!\!\!\perp}
+\providecommand{\ind}{\mathbb{1}}
+\providecommand{\convp}{\xrightarrow{\mathrm{p}}}
+\providecommand{\convd}{\xrightarrow{\mathrm{d}}}
+\providecommand{\convas}{\xrightarrow{\mathrm{a.s.}}}
+\providecommand{\Op}{O_{\mathrm{p}}}
+\providecommand{\op}{o_{\mathrm{p}}}
+
+% ---- sets ----------------------------------------------------------------
+\providecommand{\R}{\mathbb{R}}
+\providecommand{\N}{\mathbb{N}}
+\providecommand{\Z}{\mathbb{Z}}
+\providecommand{\Q}{\mathbb{Q}}
+
+% ---- linear algebra & optimisation ---------------------------------------
+\providecommand{\tr}{\operatorname{tr}}
+\providecommand{\diag}{\operatorname{diag}}
+\providecommand{\rank}{\operatorname{rank}}
+\providecommand{\sign}{\operatorname{sign}}
+\providecommand{\argmin}{\operatorname*{arg\,min}}
+\providecommand{\argmax}{\operatorname*{arg\,max}}
+\providecommand{\norm}[1]{\lVert #1 \rVert}
+\providecommand{\abs}[1]{\lvert #1 \rvert}
+\providecommand{\inner}[2]{\langle #1, #2 \rangle}
+
+% ---- misc ----------------------------------------------------------------
+\providecommand{\dd}{\mathrm{d}}
+\providecommand{\eps}{\varepsilon}

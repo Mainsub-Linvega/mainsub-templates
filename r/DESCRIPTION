@@ -1,0 +1,22 @@
+Package: mainsub
+Type: Package
+Title: Quiet Academic Report Formats for R Markdown
+Version: 0.1.0
+Authors@R: person("Mainsub", role = c("aut", "cre"), email = "mainsub@users.noreply.github.com")
+Description: R Markdown output formats (PDF via XeLaTeX, small self-contained
+    HTML) and a matching 'ggplot2' theme that share one typographic design with
+    the LaTeX, Typst and Quarto templates in the same repository: LaTeX
+    lecture-notes look, Chinese/English support, three-line tables, shared maths
+    macros.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Depends: R (>= 4.1)
+Imports:
+    rmarkdown (>= 2.14),
+    bookdown (>= 0.30),
+    knitr (>= 1.40)
+Suggests:
+    ggplot2 (>= 3.4),
+    ragg
+URL: https://github.com/Mainsub-Linvega/mainsub-templates
+RoxygenNote: 7.3.1
