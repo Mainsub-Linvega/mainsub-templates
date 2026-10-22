@@ -2,7 +2,7 @@ Package: mainsub
 Type: Package
 Title: Quiet Academic Report Formats for R Markdown
 Version: 0.1.0
-Authors@R: person("Mainsub", role = c("aut", "cre"), email = "mainsub@users.noreply.github.com")
+Authors@R: person("Mainsub", role = c("aut", "cre"), email = "196950969+Mainsub-Linvega@users.noreply.github.com")
 Description: R Markdown output formats (PDF via XeLaTeX, small self-contained
     HTML) and a matching 'ggplot2' theme that share one typographic design with
     the LaTeX, Typst and Quarto templates in the same repository: LaTeX
