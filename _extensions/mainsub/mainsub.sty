@@ -126,12 +126,14 @@
   { \PackageError { mainsub } { Unknown~font~preset~'\l__mainsub_font_tl' } { Use~newcm,~libertinus~or~stix. } }
 
 % Code: Inconsolata is narrow, legible at \small and matches CM's x-height closely.
+% TeXOff keeps " ' -- straight in code, so code copied from the PDF still runs.
 \IfFontExistsTF { Inconsolatazi4-Regular.otf }
   { \setmonofont{Inconsolatazi4}[ Extension = .otf , UprightFont = *-Regular ,
       BoldFont = *-Bold , ItalicFont = *-Regular , ItalicFeatures = { FakeSlant = 0.12 } ,
-      Scale = MatchLowercase ] }
+      Scale = MatchLowercase , Ligatures = TeXOff ] }
   { \setmonofont{NewCMMono10}[ Extension = .otf , UprightFont = *-Book ,
-      BoldFont = *-Bold , ItalicFont = *-BookItalic , Scale = MatchLowercase ] }
+      BoldFont = *-Bold , ItalicFont = *-BookItalic , Scale = MatchLowercase ,
+      Ligatures = TeXOff ] }
 \ExplSyntaxOff
 
 %% ---------------------------------------------------------------- CJK
