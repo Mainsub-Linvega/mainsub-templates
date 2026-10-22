@@ -5,14 +5,21 @@ jobs:
   check:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Copies in _extensions/, typst/ and r/inst are in sync with core/
         run: ./scripts/sync.sh && git diff --exit-code
 
       - name: Typst template compiles
         run: |
-          sudo apt-get update -qq && sudo apt-get install -y -qq fonts-noto-cjk
+          # only the three Noto CJK files the template uses; apt-get fonts-noto-cjk took ~7 minutes
+          noto=https://raw.githubusercontent.com/notofonts/noto-cjk
+          mkdir -p fonts
+          for f in Serif2.003/Serif/OTF/SimplifiedChinese/NotoSerifCJKsc-Regular.otf \
+                   Serif2.003/Serif/OTF/SimplifiedChinese/NotoSerifCJKsc-Bold.otf \
+                   Sans2.004/Sans/OTF/SimplifiedChinese/NotoSansCJKsc-Regular.otf; do
+            curl -sSfL -o "fonts/${f##*/}" "$noto/$f"
+          done
           curl -sSL https://github.com/typst/typst/releases/download/v0.15.0/typst-x86_64-unknown-linux-musl.tar.xz | tar xJ
           mkdir -p pkgs/local/mainsub-report && ln -s "$PWD/typst" pkgs/local/mainsub-report/0.1.0
-          ./typst-x86_64-unknown-linux-musl/typst compile --package-path pkgs typst/template/main.typ /tmp/out.pdf
+          ./typst-x86_64-unknown-linux-musl/typst compile --package-path pkgs --font-path fonts typst/template/main.typ /tmp/out.pdf
